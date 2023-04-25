@@ -15,7 +15,8 @@ class View(tk.Tk):
     self.data_treeview
     """
     # Size of Padding
-    PAD_VALUE = 10
+    PAD_VALUE_BIG = 10
+    PAD_VALUE_SMALL = 5
 
     # Tuple containing column names
     COLUMN_NAMES = ("ID", "Description", "Subject", "Source Lang", "Target Lang", "Year", "Month", "Client",
@@ -78,6 +79,10 @@ class View(tk.Tk):
         self._create_entry_boxes_frame()
         # Create Entry Boxes in the Entry Frame
         self._create_entry_boxes()
+        # Create Frame for Button Controls
+        self._create_controls_frame()
+        # Create Controls
+        self._create_control_buttons()
 
     def main(self):
         self.title("Translation Management App")
@@ -103,7 +108,7 @@ class View(tk.Tk):
     # Create Treeview Frame
     def _create_treeview_frame(self):
         self.treeview_frame = tk.Frame(self)
-        self.treeview_frame.pack(padx=self.PAD_VALUE, pady=self.PAD_VALUE)
+        self.treeview_frame.pack(padx=self.PAD_VALUE_BIG, pady=self.PAD_VALUE_BIG)
 
     # Create Treeview Scrollbar
     def _create_treeview_scrollbar(self):
@@ -249,10 +254,41 @@ class View(tk.Tk):
 
         # add padding to all widgets within additional info frame:
         for widget in self.entry_boxes_frame.winfo_children():
-            widget.grid_configure(padx=self.PAD_VALUE, pady=self.PAD_VALUE)
+            widget.grid_configure(padx=self.PAD_VALUE_SMALL, pady=self.PAD_VALUE_SMALL)
 
     def _create_controls_frame(self):
-        pass
+        self.controls_frame = tk.LabelFrame(self, text="Control Buttons")
+        self.controls_frame.pack()
 
     def _create_control_buttons(self):
-        pass
+        # Create a Button to Add a New Record to the Database and Update the Treeview and Table
+        self.add_new_record_btn = tk.Button(self.controls_frame, text="Add New Record")
+        self.add_new_record_btn.grid(row=0, column=0, padx=10, pady=10)
+
+        # Create a Button to Update Selected Record and Update the Treeview and Table
+        self.update_record_btn = tk.Button(self.controls_frame, text="Update Record")
+        self.update_record_btn.grid(row=0, column=1, padx=10, pady=10)
+
+        # Create a Button to Delete Selected Record and Update the Treeview and Table
+        self.delete_one_record_btn = tk.Button(self.controls_frame, text="Delete Record")
+        self.delete_one_record_btn.grid(row=0, column=2, padx=10, pady=10)
+
+        # Create a Button to Delete Many Selected Records and Update the Treeview and Table
+        self.delete_many_records_btn = tk.Button(self.controls_frame, text="Delete Selected Records")
+        self.delete_many_records_btn.grid(row=0, column=3, padx=10, pady=10)
+
+        # Create a Button to Delete All Records and Update the Treeview and Table
+        self.delete_all_records_btn = tk.Button(self.controls_frame, text="Delete All Records")
+        self.delete_all_records_btn.grid(row=0, column=4, padx=10, pady=10)
+
+        # Create a Button to Move Up Selected Record and Update the Treeview and Table
+        self.move_up_record_btn = tk.Button(self.controls_frame, text="Move Up Record")
+        self.move_up_record_btn.grid(row=0, column=5, padx=10, pady=10)
+
+        # Create a Button to Move Down Selected Record and Update the Treeview and Table
+        self.move_down_record_btn = tk.Button(self.controls_frame, text="Move Down Record")
+        self.move_down_record_btn.grid(row=0, column=6, padx=10, pady=10)
+
+        # Create a Button to Clear the Entry Boxes
+        self.clear_entry_boxes_btn = tk.Button(self.controls_frame, text="Clear Entry Boxes")
+        self.clear_entry_boxes_btn.grid(row=0, column=7, padx=10, pady=10)
