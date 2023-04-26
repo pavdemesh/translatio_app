@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
+from tkinter import font
 from PIL import ImageTk, Image
 
 
@@ -75,6 +76,8 @@ class View(tk.Tk):
         self._configure_treeview_headings(self.TREEVIEW_HEADINGS)
         # Set Color for Odd and Even Rows
         self._configure_color_odd_even_row()
+        # Configure display of deleted rows
+        self._configure_display_of_deleted_rows()
         # Create Frame for Entry Boxes and Labels
         self._create_entry_boxes_frame()
         # Create Entry Boxes in the Entry Frame
@@ -83,6 +86,8 @@ class View(tk.Tk):
         self._create_controls_frame()
         # Create Controls
         self._create_control_buttons()
+        # Display Content of the Database
+        self._display_content(self.controller.get_all_visible_records())
 
     def main(self):
         self.title("Translation Management App")
@@ -146,6 +151,18 @@ class View(tk.Tk):
     def _configure_color_odd_even_row(self):
         self.data_treeview.tag_configure('oddrow', background='white')
         self.data_treeview.tag_configure('evenrow', background='lightblue')
+
+    def _configure_display_of_deleted_rows(self):
+        # Get parameters of the default font as a dictionary
+        default_font_params = font.nametofont("TkDefaultFont").actual()
+        # Create a copy of the default font, but ith overstrike activated
+        my_font = font.Font(family=default_font_params['family'],
+                            size=default_font_params['size'],
+                            weight=default_font_params['weight'],
+                            slant=default_font_params['slant'],
+                            underline=default_font_params['underline'],
+                            overstrike=True)
+        self.data_treeview.tag_configure('is_deleted', font=my_font)
 
     # Create Frame for Entry Boxes and Labels
     def _create_entry_boxes_frame(self):
@@ -292,3 +309,40 @@ class View(tk.Tk):
         # Create a Button to Clear the Entry Boxes
         self.clear_entry_boxes_btn = tk.Button(self.controls_frame, text="Clear Entry Boxes")
         self.clear_entry_boxes_btn.grid(row=0, column=7, padx=10, pady=10)
+
+    def _display_content(self, database_records: list[tuple]):
+        # Iterate through the list of tuples = content of the database
+        # Crete counter to account for even and odd rows
+        count = 0
+        for record in database_records:
+            # If the row count is even:
+            if count % 2 == 0 and record[12] == 0:
+                # Insert data with even row tag
+                self.data_treeview.insert(parent='', index='end', text='',
+                                          values=(record[0], record[1], record[2], record[3], record[4], record[5],
+                                                  record[6], record[7], record[8], record[9], record[10],
+                                                  record[11]),
+                                          tags=['evenrow'])
+
+            elif count % 2 == 0 and record[12] == 1:
+                # Insert data with even row tag
+                self.data_treeview.insert(parent='', index='end', text='',
+                                          values=(record[0], record[1], record[2], record[3], record[4], record[5],
+                                                  record[6], record[7], record[8], record[9], record[10],
+                                                  record[11]),
+                                          tags=['evenrow', 'is_deleted'])
+
+            # If the row count is odd
+            elif count % 2 == 1 and record[12] == 0:
+                self.data_treeview.insert(parent='', index='end', text='',
+                                          values=(record[0], record[1], record[2], record[3], record[4], record[5],
+                                                  record[6], record[7], record[8], record[9], record[10]),
+                                          tags=['oddrow'])
+
+            elif count % 2 == 1 and record[12] == 1:
+                self.data_treeview.insert(parent='', index='end', text='',
+                                          values=(record[0], record[1], record[2], record[3], record[4], record[5],
+                                                  record[6], record[7], record[8], record[9], record[10]),
+                                          tags=['oddrow', 'is_deleted'])
+            # Increase counter by 1
+            count += 1

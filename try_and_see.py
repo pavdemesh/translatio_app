@@ -1,5 +1,6 @@
-d = {'description': "liefervertrag bulenz"}
+import tkinter
+from tkinter import font
 
-x = d.values()
-# print(type(*x))
-print(*d.values())
+root = tkinter.Tk()  # Start Tk instance
+your_font = font.nametofont("TkDefaultFont")  # Get default font value into Font object
+print(your_font.actual())

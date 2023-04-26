@@ -13,6 +13,12 @@ class Controller:
     def main_start(self):
         self.view.main()
 
+    def get_all_visible_records(self):
+        return self.model.deliver_all_visible_records()
+
+    def get_all_present_records(self):
+        return self.model.deliver_all_present_records()
+
 
 if __name__ == "__main__":
     app_controller = Controller()

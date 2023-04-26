@@ -26,44 +26,50 @@ class Model:
 
     def __init__(self):
         self.connection = sqlite3.connect('translations.db')
-        self._create_connect_table(self.connection, self.TABLE_NAME, self.TABLE_SCHEMA)
+        self._create_connect_table()
 
-    @staticmethod
-    def _create_connect_table(conn, table_name, schema):
+    def _create_connect_table(self):
         # Construct Query to Connect to the Table
-        CREATE_CONNECT_TRANS_TABLE_QUERY = f"CREATE TABLE IF NOT EXISTS {table_name}("
-        for column in schema:
+        CREATE_CONNECT_TRANS_TABLE_QUERY = f"CREATE TABLE IF NOT EXISTS {self.TABLE_NAME}("
+        # Add Column names and data types to the query text
+        for column in self.TABLE_SCHEMA:
             CREATE_CONNECT_TRANS_TABLE_QUERY += f'{column["col_name"]} {column["data_type"]}, '
+        # Finalize query text - remove redundant ', '
         CREATE_CONNECT_TRANS_TABLE_QUERY = CREATE_CONNECT_TRANS_TABLE_QUERY[:-2] + ')'
 
-        # Execute SQL command to connect to the table
-        with conn:
-            conn.execute(CREATE_CONNECT_TRANS_TABLE_QUERY)
+        # Execute SQL command to connect to the table and execute the query
+        with self.connection:
+            self.connection.execute(CREATE_CONNECT_TRANS_TABLE_QUERY)
 
-    def add_record_to_table(self, conn, data: list[dict]):
+    def add_record_to_table(self, params: tuple):
         # Construct the Add Record Query
+        # Generate starting part of the query
         ADD_RECORD_QUERY = f"INSERT INTO {self.TABLE_NAME} ("
+        # Add cColumn names from schema except the first column (ID)
         ADD_RECORD_QUERY += ", ".join(k['col_name'] for k in self.TABLE_SCHEMA[1:])
+        # Continue the Query Formation
         ADD_RECORD_QUERY += ') VALUES ('
+        # Add placeholder "?" equal to   number of columns minus 2 (
         ADD_RECORD_QUERY += ", ".join('?' for i in range(len(self.TABLE_SCHEMA) - 2))
+        # Add 0 (default value) for is_deleted column
         ADD_RECORD_QUERY += ", 0)"
 
-        # Construct the parameters string
-        params = tuple([list(d.values())[0] for d in data])
+        # Execute SQL command: Query + params to insert data into table
+        with self.connection:
+            self.connection.execute(ADD_RECORD_QUERY, params)
 
-        # Execute SQL command to add a new record with given data
-        with conn:
-            conn.execute(ADD_RECORD_QUERY, params)
+    def deliver_all_visible_records(self) -> list[tuple]:
+        GET_ALL_QUERY = f'SELECT * FROM {self.TABLE_NAME} WHERE is_deleted = 0'
+        with self.connection:
+            return self.connection.execute(GET_ALL_QUERY).fetchall()
 
-    def get_all_records(self, table_name):
-        pass
+    def deliver_all_present_records(self) -> list[tuple]:
+        GET_ALL_QUERY = f'SELECT * FROM {self.TABLE_NAME}'
+        with self.connection:
+            return self.connection.execute(GET_ALL_QUERY).fetchall()
+
 
 # x = Model()
-# d = [
-#     {'description': "sacrifice"}, {'subject': "liefervertrag"}, {"source_lang": "EN"}, {"target_lang": "DE"},
-#     {"year": 554},  {"month": 12}, {"client": ""}, {"source_path": ""}, {"target_path": ""}, {"quantity": 45},
-#     {"unit": "words"}
-#      ]
-# x.add_record_to_table(x.connection, d)
-
-
+# data = ("testing", "overstrike", "DE", "", 2022, 7, "", "", "", 11, "chars")
+# x.add_record_to_table(data)
+#
