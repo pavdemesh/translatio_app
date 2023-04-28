@@ -87,7 +87,9 @@ class View(tk.Tk):
         # Create Controls
         self._create_control_buttons()
         # Display Content of the Database
-        self._display_content(self.controller.get_all_visible_records())
+        self.display_content(self.controller.get_all_visible_records())
+        # Configure Behaviour on Left Mouse Click
+        self._define_left_mouseclick()
 
     def main(self):
         self.title("Translation Management App")
@@ -287,7 +289,8 @@ class View(tk.Tk):
         self.update_record_btn.grid(row=0, column=1, padx=10, pady=10)
 
         # Create a Button to Delete Selected Record and Update the Treeview and Table
-        self.delete_one_record_btn = tk.Button(self.controls_frame, text="Delete Record")
+        self.delete_one_record_btn = tk.Button(self.controls_frame,
+                                               text="Delete Record", command=self.controller.delete_row_by_id)
         self.delete_one_record_btn.grid(row=0, column=2, padx=10, pady=10)
 
         # Create a Button to Delete Many Selected Records and Update the Treeview and Table
@@ -307,10 +310,11 @@ class View(tk.Tk):
         self.move_down_record_btn.grid(row=0, column=6, padx=10, pady=10)
 
         # Create a Button to Clear the Entry Boxes
-        self.clear_entry_boxes_btn = tk.Button(self.controls_frame, text="Clear Entry Boxes")
+        self.clear_entry_boxes_btn = tk.Button(self.controls_frame,
+                                               text="Clear Entry Boxes", command=self.clear_entry_boxes)
         self.clear_entry_boxes_btn.grid(row=0, column=7, padx=10, pady=10)
 
-    def _display_content(self, database_records: list[tuple]):
+    def display_content(self, database_records: list[tuple]):
         # Iterate through the list of tuples = content of the database
         # Crete counter to account for even and odd rows
         count = 0
@@ -346,3 +350,45 @@ class View(tk.Tk):
                                           tags=['oddrow', 'is_deleted'])
             # Increase counter by 1
             count += 1
+
+    def display_deletion_confirmation(self):
+        return tk.messagebox.askquestion(title='Are you sure you want to delete the record(s)?',
+                                         message='Deletion can not be undone.\n Continue?', icon='warning')
+
+    def clear_entry_boxes(self):
+        # Clear Entry Boxes First
+        for widget in self.entry_boxes_frame.winfo_children():
+            if widget.winfo_class() in ['Entry', 'Spinbox', 'TCombobox']:
+                widget.delete(0, 'end')
+
+    def clear_treeview(self):
+        for item in self.data_treeview.get_children():
+            self.data_treeview.delete(item)
+
+    def _select_record(self, e):
+        # Clear Entry Boxes First
+        self.clear_entry_boxes()
+        # Grab Record Number
+        selected = self.data_treeview.focus()
+        # Grab Record Values
+        selected_values = self.data_treeview.item(selected, "values")
+
+        # Insert Values Into Entry Fields Omitting the 0st index (row_id)
+        value_index = 1
+        for widget in self.entry_boxes_frame.winfo_children():
+            if widget.winfo_class() in ['Entry', 'Spinbox', 'TCombobox']:
+                widget.insert(0, selected_values[value_index])
+                value_index += 1
+        # Return the RID of the selected row
+
+    def deliver_selected_row_id(self):
+        # Grab Record Number
+        selected = self.data_treeview.focus()
+        # Grab Record Values
+        selected_values = self.data_treeview.item(selected, "values")
+        # Return the RID of the selected row - index 0
+        return selected_values[0]
+
+    def _define_left_mouseclick(self):
+        # Bind Left Mouse Click to Select a Record
+        self.data_treeview.bind('<ButtonRelease-1>', self._select_record)

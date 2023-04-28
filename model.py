@@ -68,8 +68,14 @@ class Model:
         with self.connection:
             return self.connection.execute(GET_ALL_QUERY).fetchall()
 
-
-# x = Model()
-# data = ("testing", "overstrike", "DE", "", 2022, 7, "", "", "", 11, "chars")
-# x.add_record_to_table(data)
+    def mark_one_record_deleted_by_id(self, row_id):
+        with self.connection:
+            RECORD_DELETION_QUERY = f"UPDATE {self.TABLE_NAME} SET is_deleted = 1 WHERE RID = ?"
+            print(RECORD_DELETION_QUERY)
+            self.connection.execute(RECORD_DELETION_QUERY, (row_id,))
 #
+# x = Model()
+# data = ("TEST", "delete", "UA", "DE", 2022, 7, "", "", "", 1231, "hours")
+# x.add_record_to_table(data)
+# #
+# x.mark_one_record_deleted_by_id(5)
