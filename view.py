@@ -281,7 +281,8 @@ class View(tk.Tk):
 
     def _create_control_buttons(self):
         # Create a Button to Add a New Record to the Database and Update the Treeview and Table
-        self.add_new_record_btn = tk.Button(self.controls_frame, text="Add New Record")
+        self.add_new_record_btn = tk.Button(self.controls_frame, text="Add New Record",
+                                            command=self.controller.display_new_record_window)
         self.add_new_record_btn.grid(row=0, column=0, padx=10, pady=10)
 
         # Create a Button to Update Selected Record and Update the Treeview and Table
@@ -373,7 +374,7 @@ class View(tk.Tk):
         # Grab Record Values
         selected_values = self.data_treeview.item(selected, "values")
 
-        # Insert Values Into Entry Fields Omitting the 0st index (row_id)
+        # Insert Values Into Entry Fields Omitting the 0-st index (row_id)
         value_index = 1
         for widget in self.entry_boxes_frame.winfo_children():
             if widget.winfo_class() in ['Entry', 'Spinbox', 'TCombobox']:
@@ -392,3 +393,11 @@ class View(tk.Tk):
     def _define_left_mouseclick(self):
         # Bind Left Mouse Click to Select a Record
         self.data_treeview.bind('<ButtonRelease-1>', self._select_record)
+
+    def update_treeview(self):
+        # Clear Treeview
+        self.clear_treeview()
+        # Clear Entry Boxes
+        self.clear_entry_boxes()
+        # Display Updated Treeview
+        self.display_content(self.controller.get_all_visible_records())
