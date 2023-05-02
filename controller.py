@@ -1,7 +1,6 @@
 """Controller Module for Translation Management App"""
 from model import Model
 from view import View
-from add_new_record_view import AddNewRecordView
 
 
 class Controller:
@@ -32,17 +31,10 @@ class Controller:
         # Clear Treeview, Clear Entry Boxes and Display Updated Treeview
         self.view.update_treeview()
 
-    def display_new_record_window(self):
-        # Open New Window
-        self.new_record_window = AddNewRecordView(self)
-        if self.new_record_window.new_record_data:
-            self._add_new_record(self.new_record_window.new_record_data)
-
-    def _add_new_record(self, data):
+    # Function to add new data to the table as an entry
+    def add_new_record(self, data):
         # Add data to the Database
         self.model.add_record_to_table(data)
-#       # Update the Treeview
-        self.view.update_treeview() # AFTER SHOWING TOPLEVEL THIS PRODUCES ERROR
 
 
 if __name__ == "__main__":

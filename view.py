@@ -6,6 +6,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import font
 from PIL import ImageTk, Image
+from new_entry_view import NewEntryWindow
 
 
 class View(tk.Tk):
@@ -282,7 +283,7 @@ class View(tk.Tk):
     def _create_control_buttons(self):
         # Create a Button to Add a New Record to the Database and Update the Treeview and Table
         self.add_new_record_btn = tk.Button(self.controls_frame, text="Add New Record",
-                                            command=self.controller.display_new_record_window)
+                                            command=self._add_new_entry)
         self.add_new_record_btn.grid(row=0, column=0, padx=10, pady=10)
 
         # Create a Button to Update Selected Record and Update the Treeview and Table
@@ -307,8 +308,8 @@ class View(tk.Tk):
         self.move_up_record_btn.grid(row=0, column=5, padx=10, pady=10)
 
         # Create a Button to Move Down Selected Record and Update the Treeview and Table
-        self.move_down_record_btn = tk.Button(self.controls_frame, text="Move Down Record")
-        self.move_down_record_btn.grid(row=0, column=6, padx=10, pady=10)
+        self.clear_treeview_btn = tk.Button(self.controls_frame, text="Clear Treeview", command=self.clear_treeview)
+        self.clear_treeview_btn.grid(row=0, column=6, padx=10, pady=10)
 
         # Create a Button to Clear the Entry Boxes
         self.clear_entry_boxes_btn = tk.Button(self.controls_frame,
@@ -333,21 +334,20 @@ class View(tk.Tk):
                 # Insert data with even row tag
                 self.data_treeview.insert(parent='', index='end', text='',
                                           values=(record[0], record[1], record[2], record[3], record[4], record[5],
-                                                  record[6], record[7], record[8], record[9], record[10],
-                                                  record[11]),
+                                                  record[6], record[7], record[8], record[9], record[10],record[11]),
                                           tags=['evenrow', 'is_deleted'])
 
             # If the row count is odd
             elif count % 2 == 1 and record[12] == 0:
                 self.data_treeview.insert(parent='', index='end', text='',
                                           values=(record[0], record[1], record[2], record[3], record[4], record[5],
-                                                  record[6], record[7], record[8], record[9], record[10]),
+                                                  record[6], record[7], record[8], record[9], record[10], record[11]),
                                           tags=['oddrow'])
 
             elif count % 2 == 1 and record[12] == 1:
                 self.data_treeview.insert(parent='', index='end', text='',
                                           values=(record[0], record[1], record[2], record[3], record[4], record[5],
-                                                  record[6], record[7], record[8], record[9], record[10]),
+                                                  record[6], record[7], record[8], record[9], record[10], record[11]),
                                           tags=['oddrow', 'is_deleted'])
             # Increase counter by 1
             count += 1
@@ -380,6 +380,7 @@ class View(tk.Tk):
             if widget.winfo_class() in ['Entry', 'Spinbox', 'TCombobox']:
                 widget.insert(0, selected_values[value_index])
                 value_index += 1
+                print(value_index)
         # Return the RID of the selected row
 
     def deliver_selected_row_id(self):
@@ -401,3 +402,16 @@ class View(tk.Tk):
         self.clear_entry_boxes()
         # Display Updated Treeview
         self.display_content(self.controller.get_all_visible_records())
+
+    def _add_new_entry(self):
+        # Show entry window
+        new_window = NewEntryWindow()
+        # Get data from the entry form
+        new_data = new_window.new_record_data
+        # If data really present - add them to the table
+        if new_data:
+            self.controller.add_new_record(new_data)
+        # Update the treeview
+        # self.update_treeview()
+        # self.clear_treeview()
+

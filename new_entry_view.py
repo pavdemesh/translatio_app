@@ -5,14 +5,14 @@ from tkinter import filedialog
 from PIL import ImageTk, Image
 
 
-class AddNewRecordView:
+class NewEntryWindow(tkinter.Toplevel):
 
-    def __init__(self, controller):
-        self.controller = controller
+    def __init__(self):
+        super().__init__()
         self.new_record_data = False
-        self.data_entry_window()
+        self._new_entry_window()
 
-    def data_entry_window(self):
+    def _new_entry_window(self):
         # function to retrieve and submit all the data
         def submit_data():
             # Sanity Check Status first
@@ -28,26 +28,26 @@ class AddNewRecordView:
                 tr_target_lang = target_lang_combobox.get()
                 if tr_description and tr_subject and tr_source_lang and tr_target_lang:
                     # Year
-                    tr_year = year_spinbox.get()
+                    tr_year = year_spinbox.get() or 2023
                     # Month
-                    tr_month = month_spinbox.get()
+                    tr_month = month_spinbox.get() or 5
                     # Client
-                    tr_client = client_entry.get()
+                    tr_client = client_entry.get() or '-----'
                     # Source Path
-                    tr_source_path = source_path_entry.get()
+                    tr_source_path = source_path_entry.get() or '-----'
                     # Target path
-                    tr_target_path = target_path_entry.get()
+                    tr_target_path = target_path_entry.get() or '-----'
                     # Quantity
-                    tr_quantity = quantity_entry.get()
+                    tr_quantity = quantity_entry.get() or 0
                     # Unit
-                    tr_unit = unit_combobox.get()
+                    tr_unit = unit_combobox.get() or '-----'
                     # Store read data
                     new_record_data = (tr_description, tr_subject, tr_source_lang, tr_target_lang, tr_year, tr_month,
                                        tr_client, tr_source_path, tr_target_path, tr_quantity, tr_unit)
                     # Call Controller to Add New Record to Database
                     self.new_record_data = new_record_data
 
-                    window.destroy()
+                    self.destroy()
                 else:
                     tkinter.messagebox.showwarning(title='Error',
                                                    message='Description, Subject and Languages are required')
@@ -55,14 +55,11 @@ class AddNewRecordView:
                 tkinter.messagebox.showwarning(title='Confirmation Required',
                                                message='Please confirm that all data are correct')
 
-        # create a root window (where all the widgets and tabs will reside)
-        window = tkinter.Toplevel()
-
-        # add a title for the root window
-        window.title('Translation Data Entry Form')
+        # add a title for the root self
+        self.title('Translation Data Entry Form')
 
         # create frame and pack it (place it)
-        frame = tkinter.Frame(window)
+        frame = tkinter.Frame(self)
         frame.pack()
 
         # create LabelFrame for basic translation info and fill it with widgets
@@ -193,5 +190,5 @@ class AddNewRecordView:
         submit_button = tkinter.Button(frame, text='Submit data', command=submit_data)
         submit_button.grid(row=3, column=0, sticky='new', padx=20, pady=10)
 
-        # make the root window to be displayed
-        window.mainloop()
+        # make the root self to be displayed
+        self.mainloop()
