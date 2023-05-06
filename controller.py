@@ -17,23 +17,24 @@ class Controller:
     def get_all_visible_records(self):
         return self.model.deliver_all_visible_records()
 
+    # Requesst all visible records from Model and return a list of tuples
     def get_all_present_records(self):
         return self.model.deliver_all_present_records()
 
+    # Delete a Single Row by id
     def delete_row_by_id(self):
         # Get row_id from selected row
         row_id = self.view.deliver_selected_row_id()
         # Ask for deletion confirmation
         deletion_confirmation = self.view.display_deletion_confirmation()
         if deletion_confirmation == 'yes':
-            # Mark record in database as is_deleted
+            # Mark record in database (Model) as deleted
             self.model.mark_one_record_deleted_by_id(row_id)
         # Clear Treeview, Clear Entry Boxes and Display Updated Treeview
         self.view.update_treeview()
 
-    # Function to add new data to the table as an entry
+    # Function to add new entry to the database (Model), require data - a tuple
     def add_new_record(self, data):
-        # Add data to the Database
         self.model.add_record_to_table(data)
 
 

@@ -283,7 +283,7 @@ class View(tk.Tk):
     def _create_control_buttons(self):
         # Create a Button to Add a New Record to the Database and Update the Treeview and Table
         self.add_new_record_btn = tk.Button(self.controls_frame, text="Add New Record",
-                                            command=self._add_new_entry)
+                                            command=self.add_new_entry)
         self.add_new_record_btn.grid(row=0, column=0, padx=10, pady=10)
 
         # Create a Button to Update Selected Record and Update the Treeview and Table
@@ -380,7 +380,6 @@ class View(tk.Tk):
             if widget.winfo_class() in ['Entry', 'Spinbox', 'TCombobox']:
                 widget.insert(0, selected_values[value_index])
                 value_index += 1
-                print(value_index)
         # Return the RID of the selected row
 
     def deliver_selected_row_id(self):
@@ -403,15 +402,10 @@ class View(tk.Tk):
         # Display Updated Treeview
         self.display_content(self.controller.get_all_visible_records())
 
-    def _add_new_entry(self):
+    def add_new_entry(self):
         # Show entry window
-        new_window = NewEntryWindow()
-        # Get data from the entry form
-        new_data = new_window.new_record_data
-        # If data really present - add them to the table
-        if new_data:
-            self.controller.add_new_record(new_data)
-        # Update the treeview
-        # self.update_treeview()
-        # self.clear_treeview()
-
+        new_window = NewEntryWindow(self.controller)
+        # After all done within the entry window
+        self.grab_set()
+        # Update the Treeview
+        self.update_treeview()
